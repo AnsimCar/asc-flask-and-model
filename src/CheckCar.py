@@ -29,10 +29,24 @@ for label in labels:
 
 print('Loaded pretrained models!')
 
-def convert(email, img_path):
-    path = "converted/"+email
+def convert(email, carId, sign, img_path):
+    path = 'converted/'
     if not os.path.exists(path):
         os.mkdir(path)
+
+    path += email
+    if not os.path.exists(path):
+        os.mkdir(path)
+
+    if (sign == '0') or (sign == False):
+        path += "/rent"
+        if not os.path.exists(path):
+            os.mkdir(path)
+
+    elif (sign == '1') or (sign == True):
+        path += "/return"
+        if not os.path.exists(path):
+            os.mkdir(path)
 
     img = cv2.imread(img_path)
     img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
@@ -75,8 +89,14 @@ def convert(email, img_path):
 
     fig.set_tight_layout(True)
 
-    converedDir = 'converted/' + email + '/' + email + str(datetime.now().year) + str(datetime.now().month) + str(datetime.now().day) + str(datetime.now().hour) + str(datetime.now().minute)
+    converedDir = ""
+
+    if (sign == '0') or (sign == False):
+        converedDir = path + "/" + carId + str(datetime.now().year) + str(datetime.now().month) + str(datetime.now().day) + str(datetime.now().hour) + str(datetime.now().minute)
+    elif (sign == '1') or (sign == True):
+        converedDir = path + "/" + carId + str(datetime.now().year) + str(datetime.now().month) + str(datetime.now().day) + str(datetime.now().hour) + str(datetime.now().minute)
+
     plt.savefig(converedDir)
-    print("saved!")
+    print("saved!, " + converedDir)
 
     return os.getcwd() + '/' + converedDir + '.png'

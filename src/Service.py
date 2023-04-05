@@ -1,4 +1,4 @@
 import CheckCar
 
-def checkCar(email, img):
-    return CheckCar.convert(email, img)
+def checkCar(email, carId, sign, img):
+    return CheckCar.convert(email, carId, sign, img)
