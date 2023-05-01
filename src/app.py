@@ -1,13 +1,13 @@
 # app.py
-from flask import Flask
+from flask import Flask, render_template
 import Service
 
 app = Flask(__name__)
 
-@app.route('/convert/<email>/<carId>/<sign>/<path:img>')
-def convert(email, carId, sign, img):
-  #sign 0-대여, 1-반납
-  return Service.checkCar(email, carId, sign, img) 
+@app.route('/convert/<path:img>')
+def convert(img):
+  img_path = Service.checkCar(img)
+  return img_path
 
 if __name__=="__main__":
   app.run(debug=True)

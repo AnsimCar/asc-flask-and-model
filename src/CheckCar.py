@@ -3,6 +3,9 @@ import cv2
 import matplotlib.pyplot as plt
 import os
 from datetime import datetime
+import boto3
+import S3Config
+import S3Connection
 
 from Models import Unet
 
@@ -29,26 +32,40 @@ for label in labels:
 
 print('Loaded pretrained models!')
 
-def convert(email, carId, sign, img_path):
-    path = 'converted/'
+def convert(imgPath, userId, rentDate, carId, sign, imgName, imgFullName):
+    path = 'src/static/src/img'
+    tempImgPath = imgPath
+
+    path += '/' + userId
+    if not os.path.exists(path):
+        os.mkdir(path)
+    
+    path += '/rent'
+    if not os.path.exists(path):
+        os.mkdir(path)
+    
+    path += '/' + rentDate
     if not os.path.exists(path):
         os.mkdir(path)
 
-    path += email
+    path += '/' + carId
     if not os.path.exists(path):
         os.mkdir(path)
 
-    if (sign == '0') or (sign == False):
-        path += "/rent"
-        if not os.path.exists(path):
-            os.mkdir(path)
+    path += '/' + sign 
+    if not os.path.exists(path):
+        os.mkdir(path)
 
-    elif (sign == '1') or (sign == True):
-        path += "/return"
-        if not os.path.exists(path):
-            os.mkdir(path)
+    path += '/render'
+    if not os.path.exists(path):
+        os.mkdir(path)
 
-    img = cv2.imread(img_path)
+    s3 = S3Connection.s3Connection()
+    s3.download_file(S3Config.BUCKET_NAME, userId+'/rent/'+rentDate+'/'+carId+'/'+sign+'/original/'+imgFullName, path + '/' + imgFullName)
+
+    tempImgPath = str(path + '/' + imgFullName).replace('/', '\\')
+
+    img = cv2.imread(tempImgPath)
     img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
     img = cv2.resize(img, (256, 256))
 
@@ -89,14 +106,10 @@ def convert(email, carId, sign, img_path):
 
     fig.set_tight_layout(True)
 
-    converedDir = ""
+    convertDir = 'src/static/src/img/' + userId+'/rent/'+rentDate+'/'+carId+'/'+sign+'/render/'+imgName+'.png'
 
-    if (sign == '0') or (sign == False):
-        converedDir = path + "/" + carId + str(datetime.now().year) + str(datetime.now().month) + str(datetime.now().day) + str(datetime.now().hour) + str(datetime.now().minute)
-    elif (sign == '1') or (sign == True):
-        converedDir = path + "/" + carId + str(datetime.now().year) + str(datetime.now().month) + str(datetime.now().day) + str(datetime.now().hour) + str(datetime.now().minute)
+    plt.savefig(convertDir)
 
-    plt.savefig(converedDir)
-    print("saved!, " + converedDir)
+    s3.upload_file(convertDir, S3Config.BUCKET_NAME, userId+'/rent/'+rentDate+'/'+carId+'/'+sign+'/render/'+imgName+'.png')
 
-    return os.getcwd() + '/' + converedDir + '.png'
+    return imgPath.split('/')[0] + '//' +imgPath.split('/')[2]+'/'+ userId+'/rent/'+rentDate+'/'+carId+'/'+sign+'/render/'+imgName+'.png'

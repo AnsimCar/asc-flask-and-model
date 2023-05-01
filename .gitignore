@@ -3,3 +3,5 @@ models/*
 .DS_Store
 __pycache__
 converted/*
+src/S3Config.py
+src/static/src/img/*
