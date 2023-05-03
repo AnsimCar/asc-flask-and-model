@@ -74,7 +74,7 @@ def convert(imgPath, userId, rentDate, carId, sign, imgName, imgFullName):
     img_input = torch.tensor(img_input).float().to(device)
     img_input = img_input.unsqueeze(0)
 
-    fig, ax = plt.subplots(1, 5, figsize=(24, 10))
+    fig, ax = plt.subplots(1, 5, figsize=(24, 6))
 
     ax[0].imshow(img)
     ax[0].axis('off')
@@ -110,6 +110,6 @@ def convert(imgPath, userId, rentDate, carId, sign, imgName, imgFullName):
 
     plt.savefig(convertDir)
 
-    s3.upload_file(convertDir, S3Config.BUCKET_NAME, userId+'/rent/'+rentDate+'/'+carId+'/'+sign+'/render/'+imgName+'.png')
+    s3.upload_file(convertDir, S3Config.BUCKET_NAME, userId+'/rent/'+rentDate+'/'+carId+'/'+sign+'/render/'+imgName+'.png', ExtraArgs={'ContentType':'image/jpeg'})
 
     return imgPath.split('/')[0] + '//' +imgPath.split('/')[2]+'/'+ userId+'/rent/'+rentDate+'/'+carId+'/'+sign+'/render/'+imgName+'.png'
