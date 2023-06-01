@@ -1,6 +1,8 @@
 # app.py
-from flask import Flask, render_template
+from flask import Flask, request, render_template
+import os
 import Service
+from werkzeug.utils import secure_filename
 
 app = Flask(__name__)
 

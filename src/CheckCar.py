@@ -32,6 +32,7 @@ for label in labels:
 
 print('Loaded pretrained models!')
 
+
 def convert(imgPath, userId, rentDate, carId, sign, imgName, imgFullName):
     path = 'src/static/src/img'
     tempImgPath = imgPath
@@ -39,11 +40,11 @@ def convert(imgPath, userId, rentDate, carId, sign, imgName, imgFullName):
     path += '/' + userId
     if not os.path.exists(path):
         os.mkdir(path)
-    
+
     path += '/rent'
     if not os.path.exists(path):
         os.mkdir(path)
-    
+
     path += '/' + rentDate
     if not os.path.exists(path):
         os.mkdir(path)
@@ -52,7 +53,7 @@ def convert(imgPath, userId, rentDate, carId, sign, imgName, imgFullName):
     if not os.path.exists(path):
         os.mkdir(path)
 
-    path += '/' + sign 
+    path += '/' + sign
     if not os.path.exists(path):
         os.mkdir(path)
 
@@ -61,7 +62,8 @@ def convert(imgPath, userId, rentDate, carId, sign, imgName, imgFullName):
         os.mkdir(path)
 
     s3 = S3Connection.s3Connection()
-    s3.download_file(S3Config.BUCKET_NAME, userId+'/rent/'+rentDate+'/'+carId+'/'+sign+'/original/'+imgFullName, path + '/' + imgFullName)
+    s3.download_file(S3Config.BUCKET_NAME, userId+'/rent/'+rentDate+'/' +
+                     carId+'/'+sign+'/original/'+imgFullName, path + '/' + imgFullName)
 
     tempImgPath = str(path + '/' + imgFullName).replace('/', '\\')
 
@@ -106,16 +108,18 @@ def convert(imgPath, userId, rentDate, carId, sign, imgName, imgFullName):
 
     fig.set_tight_layout(True)
 
-    convertDir = 'src/static/src/img/' + userId+'/rent/'+rentDate+'/'+carId+'/'+sign+'/render/'+imgName+'.png'
+    convertDir = 'src/static/src/img/' + userId+'/rent/' + \
+        rentDate+'/'+carId+'/'+sign+'/render/'+imgName+'.png'
 
     plt.savefig(convertDir)
 
-    s3.upload_file(convertDir, S3Config.BUCKET_NAME, userId+'/rent/'+rentDate+'/'+carId+'/'+sign+'/render/'+imgName+'.png', ExtraArgs={'ContentType':'image/jpeg'})
+    s3.upload_file(convertDir, S3Config.BUCKET_NAME, userId+'/rent/'+rentDate+'/' +
+                   carId+'/'+sign+'/render/'+imgName+'.png', ExtraArgs={'ContentType': 'image/jpeg'})
 
-    return imgPath.split('/')[0] + '//' +imgPath.split('/')[2]+'/'+ userId+'/rent/'+rentDate+'/'+carId+'/'+sign+'/render/'+imgName+'.png'
+    return imgPath.split('/')[0] + '//' + imgPath.split('/')[2]+'/' + userId+'/rent/'+rentDate+'/'+carId+'/'+sign+'/render/'+imgName+'.png'
 
 
-def convert(imgPath):
+def convert2(imgPath):
     img = cv2.imread(imgPath)
     img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
     img = cv2.resize(img, (256, 256))
